@@ -80,7 +80,6 @@ class Sidra(object):
             'Not sure.'
             ]
 
-    recognizer = sr.Recognizer()
 
     query_string = 'https://www.google.com/search?q='   
     
@@ -90,7 +89,7 @@ class Sidra(object):
         self.debug = False
         self.listen_mode = listen_mode # text | speech
         self.voice_mode = voice_mode # text | speech
-        
+        self.recognizer = sr.Recognizer()
         query_string = 'https://www.google.com/search?q='   
 
         self.sir = SIR()
@@ -179,6 +178,9 @@ class Sidra(object):
         self.say('Here\'s your search on ' + query + '.')
         webbrowser.open(self.query_string + query)
 
+    def get_weather(self):
+        return 'I hope it\'s sunny!'
+
     def remember(self, g, connections_string):
         self.sir.add_fact(g, connections_string)
         self.say(random.choice(self.understoods))
@@ -233,10 +235,10 @@ class Sidra(object):
         audio = None
         text = None
         with sr.Microphone() as source:
-            speech = r.listen(source)
+            speech = self.recognizer.listen(source)
 
         try:
-            text = r.recognize_sphinx(speech)
+            text = self.recognizer.recognize_sphinx(speech)
         except:
             pass
 
