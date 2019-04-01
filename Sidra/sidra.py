@@ -139,7 +139,7 @@ class Sidra(object):
             ( "(quit|shut down|turn off)",                               lambda g: self.quit())
          ) 
 
-    def list_functions(self, g):
+    def list_functions(self):
         self.say('I can provide jokes, fortunes, quotes, the date, the time, and definitions. More to come soon.')
 
     def handle(self, inp):
@@ -299,7 +299,12 @@ class Sidra(object):
         self.sir.dump(filepath)
         # dump anything else here too
 
-
 if __name__ == '__main__':
-    sidra = Sidra(name='Sidra')
+    import sys
+    sidra = []
+    if len(sys.argv) == 3:
+        sidra = Sidra(name='Sidra', listen_mode = sys.argv[1], voice_mode = sys.argv[2])
+    else:
+        sidra = Sidra(name='Sidra', listen_mode = 'speech', voice_mode = 'speech')
+
     sidra.run()
