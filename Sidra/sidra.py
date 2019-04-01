@@ -88,8 +88,6 @@ class Sidra(object):
             'Not sure.'
             ]
 
-
-
     query_string = 'https://www.google.com/search?q='   
     
     def __init__(self, listen_mode='text', voice_mode='speech', name='Sidra', debug=False):
@@ -189,11 +187,13 @@ class Sidra(object):
         tts.save('.sidra_response.mp3')
         os.system("ffplay -hide_banner -autoexit -loglevel panic -nodisp .sidra_response.mp3 > /dev/null")
 
-
     def search(self, g):
         query = ''.join(g)
         self.say('Here\'s your search on ' + query + '.')
         webbrowser.open(self.query_string + query)
+
+    def get_weather(self):
+        return 'I hope it\'s sunny!'
 
     def remember(self, g, connections_string):
         self.sir.add_fact(g, connections_string)
@@ -251,7 +251,6 @@ class Sidra(object):
 
         print('Say something.')
 
-        
         while text == None:
             with sr.Microphone() as source:
                 speech = self.recognizer.listen(source)
@@ -263,10 +262,6 @@ class Sidra(object):
 
         self.debug_print('You said: \"' + text + "\"")
 
-
-        return text
-
-        self.say('Sorry, I didn\'t quite get that.')
 
     def quit(self):
         self.say(random.choice(self.goodbyes))
