@@ -32,6 +32,14 @@ from cmd import cmd
 #       this one might be a bit hard, try getting current output decibels from alsa somehow
 
 class Sidra(object):
+    greetings = [
+            'Hi.',
+            'Hello.',
+            'Hey.',
+            'What\'s up?',
+            'How\'s it going?'
+            ]
+
     prompts = [
             'What can I do for you?',
             'How can I help?',
@@ -88,7 +96,7 @@ class Sidra(object):
         self.name = name
         self.running = False
         self.debug = False
-        self.listen_mode = listen_mode # text | speech
+        self.listen_mode = voice_mode # text | speech
         self.voice_mode = voice_mode # text | speech
         self.recognizer = sr.Recognizer()
         query_string = 'https://www.google.com/search?q='   
@@ -111,13 +119,14 @@ class Sidra(object):
             ( "does (.*) own (a|an) (.*)",                               lambda g: self.recall(g, "0e*ms*ps*2")),
 
             # Fun things
+            ( "(hi|hello|hey)(.*)",                                      lambda g: self.greet(g)),
             ( "say (.*)",                                                lambda g: self.say(g)),
             ( "search (for )?(.*)",                                      lambda g: self.search(g)),
             ( "tell (me )?a (joke|fortune|quote)",                       lambda g: self.tell_a(g)),
             ( "(what's|tell me) the (weather|date|time)",                lambda g: self.tell_the(g)),
             ( "what (day|time) is it",                                   lambda g: self.tell_the((' ',) + g)),
             ( "what does (.*) mean",                                     lambda g: self.dictionary(g)),
-            ( "what (is )?(a )?(.*)",                                    lambda g: self.wikipedia(g)),
+            ( "what is (a)?(.*)",                                        lambda g: self.wikipedia(g)),
 
             # Debug utils
             ( "voice-mode (text|speech)",                                lambda g: self.set_voice_mode(g)),
@@ -127,9 +136,13 @@ class Sidra(object):
             ( "erase memory",                                            lambda g: self.erase_memory()),
 
             # etc
-            ( "help",                                                    lambda g: self.help()),
-            ( "quit",                                                    lambda g: self.quit())
+            ( "(help|what can you do|what are you capable of)",          lambda g: self.help()),
+            ( "list all functions",                                      lambda g: self.list_functions()),
+            ( "(quit|shut down|turn off)",                               lambda g: self.quit())
          ) 
+
+    def list_functions(self, g):
+        self.say('I can provide jokes, fortunes, quotes, the date, the time, and definitions. More to come soon.')
 
     def handle(self, inp):
         '''Find which rule applies to input and perform that action'''
@@ -153,6 +166,9 @@ class Sidra(object):
     
     def dictionary(self, g):
         self.say('Sorry, I can\'t do that yet.')
+
+    def greet(self, g):
+        self.say(random.choice(self.greetings))
 
     def get_input(self):
         if self.mode == 'text':
@@ -235,18 +251,20 @@ class Sidra(object):
 
         print('Say something.')
 
-        with sr.Microphone() as source:
-            speech = self.recognizer.listen(source)
+        
+        while text == None:
+            with sr.Microphone() as source:
+                speech = self.recognizer.listen(source)
 
-        try:
-            text = self.recognizer.recognize_google(speech)
-        except:
-            pass
+            try:
+                text = self.recognizer.recognize_google(speech)
+            except:
+                pass
 
         self.debug_print('You said: \"' + text + "\"")
 
-        if text != None:
-            return text
+
+        return text
 
         self.say('Sorry, I didn\'t quite get that.')
 
@@ -275,8 +293,11 @@ class Sidra(object):
             print('[*] ' + text)
 
     def help(self):
-        for pattern, _ in self.rules:
-            print(pattern)
+        if self.voice_mode == 'text':
+            for pattern, _ in self.rules:
+                print(pattern)
+        else:
+            self.say('You can ask me for things like the time, what something means, or to remember a fact. For a full list of functions, say, \'List all functions.\'.')
 
     def dump(self, g):
         filepath = g.split(' ')[0]
