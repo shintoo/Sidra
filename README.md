@@ -7,3 +7,11 @@ Sidra is a virtual assistant who can be interacted with using voice or text. Sid
 Part of Sidra is the Semantic Information Retrieval System, which is a very simple and barebones approach to building a knowledge base from which basic inferences can be made. Relationships between sets can be declared to Sidra, and questions regarding those sets can be asked. 
 
 This project is still in its early stages, and serves mostly as a playground for me than as an actually useful assistant.
+
+#### Dependencies
+
+* gtts (for text-to-speech)
+* SpeechRecognition (for... speech recognition)
+* Wikipedia (my fork) (for looking things up)
+* fortune (for jokes, riddles, etc.)
+* PyAudio (for voice input)
