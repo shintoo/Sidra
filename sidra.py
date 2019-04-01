@@ -80,7 +80,7 @@ class Sidra(object):
             'Not sure.'
             ]
 
-    recognizer = sr.Recognizer()
+
 
     query_string = 'https://www.google.com/search?q='   
     
@@ -90,7 +90,7 @@ class Sidra(object):
         self.debug = False
         self.listen_mode = listen_mode # text | speech
         self.voice_mode = voice_mode # text | speech
-        
+        self.recognizer = sr.Recognizer()
         query_string = 'https://www.google.com/search?q='   
 
         self.sir = SIR()
@@ -157,7 +157,7 @@ class Sidra(object):
     def get_input(self):
         if self.mode == 'text':
             return self.text_input()
-        return self.speech_input()
+        return self.voice_input()
 
     def say(self, g):
         text = ''.join(g).encode('ascii', errors='ignore')
@@ -232,13 +232,18 @@ class Sidra(object):
     def voice_input(self):
         audio = None
         text = None
+
+        print('Say something.')
+
         with sr.Microphone() as source:
-            speech = r.listen(source)
+            speech = self.recognizer.listen(source)
 
         try:
-            text = r.recognize_sphinx(speech)
+            text = self.recognizer.recognize_google(speech)
         except:
             pass
+
+        self.debug_print('You said: \"' + text + "\"")
 
         if text != None:
             return text
