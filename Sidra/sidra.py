@@ -15,22 +15,6 @@ import wikipedia as wiki
 from sir import SIR
 from cmd import cmd
 
-
-# TODO
-#   * redesign - design whole structure bottom-up, split into modules - do this before anything else
-#   * add weather getting function      do this next
-#   * add google calendar API
-#   * add wikipedia query               DONE
-#   * add dictionary api                then maybe do this? wikipedia is pretty good though
-#   # add ez functions (timers, reminders)
-#   * add news headline (maybe newscure?)
-#   * create a DSL for writing custom scripts without having to edit python file, and make it easy to write in
-#
-#  post pi zero w arrival --
-#   * make a status led
-#   * make a voice led
-#       this one might be a bit hard, try getting current output decibels from alsa somehow
-
 class Sidra(object):
     greetings = [
             'Hi.',
@@ -253,15 +237,16 @@ class Sidra(object):
 
         while text == None:
             with sr.Microphone() as source:
-                speech = self.recognizer.listen(source)
+                audio = self.recognizer.listen(source)
 
             try:
-                text = self.recognizer.recognize_google(speech)
+                text = self.recognizer.recognize_google(audio) 
             except:
                 pass
 
         self.debug_print('You said: \"' + text + "\"")
 
+        return text
 
     def quit(self):
         self.say(random.choice(self.goodbyes))
@@ -306,5 +291,8 @@ if __name__ == '__main__':
         sidra = Sidra(name='Sidra', listen_mode = sys.argv[1], voice_mode = sys.argv[2])
     else:
         sidra = Sidra(name='Sidra', listen_mode = 'speech', voice_mode = 'speech')
+
+    if 'debug' in sys.argv:
+        sidra.set_debug(True)
 
     sidra.run()
